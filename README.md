@@ -1,1 +1,0 @@
-The hydrodynamic [Burgers equation](https://en.wikipedia.org/wiki/Burgers%27_equation) can be solved numerically, for example, using the Rusanov method (see: 2.1.1 in the THE SOLUTION OF A BURGERS EQUATION PDF file). Parallelize the algorithm. Present the results graphically. Do you see any discontinuities (shock waves) appearing?
