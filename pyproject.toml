@@ -1,0 +1,11 @@
+[project]
+name = "ar-project"
+version = "0.1.0"
+description = "Parallel numerical solver for the hydrodynamic Burgers equation using the Rusanov method with MPI, featuring shock wave visualization and performance analysis for high-performance computing studies."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=1.26.0",
+    "matplotlib>=3.8.0",
+    "mpi4py>=3.1.5",
+]

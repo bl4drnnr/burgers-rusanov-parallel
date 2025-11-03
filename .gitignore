@@ -1,0 +1,38 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# AI
+.claude
+
+# Results and outputs
+*.npz
+*.png
+*.jpg
+*.json
+*.mp4
+*.avi
+frames/
+scaling_results/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS and IDE
+.DS_Store
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+Thumbs.db
+
+# Logs
+*.log
