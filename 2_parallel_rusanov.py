@@ -410,6 +410,33 @@ def main():
 
         print(f"\nResults saved to {args.save}")
 
+        # Save timing data to JSON (following AR lab 3 format)
+        import json
+        from pathlib import Path
+
+        # Generate JSON filename from .npz filename
+        npz_path = Path(args.save)
+        json_filename = npz_path.stem + '.json'  # Replace .npz with .json
+        json_path = npz_path.parent / json_filename
+
+        timing_data = {
+            'method': 'rusanov_mpi',
+            'nx': int(args.nx),
+            'processes': int(comm.Get_size()),
+            'n_steps': int(solver.n_steps),
+            'time': float(elapsed_time),
+            'converged': True,  # Burgers always "converges" by reaching t_final
+            't_final': float(args.t_final),
+            'cfl': float(args.cfl),
+            'nu': float(args.nu),
+            'initial_condition': args.ic
+        }
+
+        with open(json_path, 'w') as f:
+            json.dump(timing_data, f, indent=2)
+
+        print(f"Timing data saved to {json_path}")
+
         # Check for shocks
         gradients = np.abs(np.gradient(u_final, solver.x_global))
         max_gradient = np.max(gradients)

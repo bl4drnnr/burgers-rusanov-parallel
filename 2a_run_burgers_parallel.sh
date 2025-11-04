@@ -19,8 +19,8 @@ mkdir -p results
 mkdir -p logs
 mkdir -p plots
 
-# Grid sizes to test (for strong scaling: same problem, different process counts)
-GRIDS="300 600 1200"
+# Grid sizes to test (MUST match sequential notebook: GRID_SIZES = [1200, 2400, 4800])
+GRIDS="1200 2400 4800"
 
 # Process counts to test
 PROCS="1 2 4 8 16 24 32 48"
