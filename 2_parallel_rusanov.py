@@ -55,6 +55,10 @@ class BurgersRusanovParallel:
         self.dt = 0.0
         self.n_steps = 0
 
+        # Cache for dt computation (reduce communication)
+        self.cached_dt = None
+        self.dt_recompute_interval = 100  # Recompute dt every N steps
+
         # Storage for snapshots (only on root)
         if self.rank == 0:
             self.snapshots = []
@@ -214,24 +218,33 @@ class BurgersRusanovParallel:
         return 0.5 * (f_left + f_right) - 0.5 * alpha * (u_right - u_left)
 
     def compute_dt(self) -> float:
-        """Compute time step based on CFL condition (global minimum)."""
-        # Local maximum speed
-        max_speed_local = np.max(np.abs(self.u[1:-1]))
+        """
+        Compute time step based on CFL condition (global minimum).
 
-        # Global maximum speed
-        max_speed = self.comm.allreduce(max_speed_local, op=MPI.MAX)
+        OPTIMIZATION: Only recompute every dt_recompute_interval steps
+        to reduce expensive allreduce operations (from 288k to ~2.8k calls).
+        """
+        # Only recompute dt periodically to reduce communication overhead
+        if self.cached_dt is None or self.n_steps % self.dt_recompute_interval == 0:
+            # Local maximum speed
+            max_speed_local = np.max(np.abs(self.u[1:-1]))
 
-        if max_speed > 1e-10:
-            dt_convection = self.cfl * self.dx / max_speed
-        else:
-            dt_convection = self.cfl * self.dx / 1e-10
+            # Global maximum speed (EXPENSIVE: requires allreduce synchronization)
+            max_speed = self.comm.allreduce(max_speed_local, op=MPI.MAX)
 
-        if self.nu > 0:
-            # Conservative diffusion stability factor (0.25 instead of 0.5)
-            dt_diffusion = 0.25 * self.dx**2 / self.nu
-            return min(dt_convection, dt_diffusion)
+            if max_speed > 1e-10:
+                dt_convection = self.cfl * self.dx / max_speed
+            else:
+                dt_convection = self.cfl * self.dx / 1e-10
 
-        return dt_convection
+            if self.nu > 0:
+                # Conservative diffusion stability factor (0.25 instead of 0.5)
+                dt_diffusion = 0.25 * self.dx**2 / self.nu
+                self.cached_dt = min(dt_convection, dt_diffusion)
+            else:
+                self.cached_dt = dt_convection
+
+        return self.cached_dt
 
     def step(self):
         """Perform one time step using the Rusanov method."""

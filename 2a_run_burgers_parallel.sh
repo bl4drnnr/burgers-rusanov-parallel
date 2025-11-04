@@ -72,14 +72,3 @@ echo "End time: $(date)"
 echo "Results saved in results/"
 echo "======================================"
 
-# Create visualizations for selected results
-echo ""
-echo "Creating visualizations..."
-
-# Visualize one representative result
-for N in $GRIDS; do
-    echo "Creating visualization for nx=$N, P=1 (sequential)..."
-    python 3_visualization.py results/burgers_nx${N}_P1.npz --type shock
-done
-
-echo "Visualizations complete!"

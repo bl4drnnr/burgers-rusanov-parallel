@@ -14,6 +14,9 @@ wheels/
 CLAUDE.md
 
 # Results and outputs
+*.png
+*.json
+*.npz
 *.jpg
 *.mp4
 *.avi
@@ -35,3 +38,5 @@ Thumbs.db
 # Logs
 *.log
 plgrid_results.tar.gz
+PERFORMANCE_ANALYSIS.md
+
